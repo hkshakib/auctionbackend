@@ -44,6 +44,7 @@ INSTALLED_APPS = [
 
     # local app
     'authentication',
+    'auction',
 ]
 
 MIDDLEWARE = [
