@@ -1,3 +1,120 @@
-from django.shortcuts import render
+from django.db.models import Count
 
-# Create your views here.
+from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.exceptions import NotFound
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework import status
+
+from .models import Bid, Product
+from .serializers import BidSerializer, ProductSerializer
+
+
+class ProductListView(APIView):
+    """
+        The parser_classes attribute is set to [MultiPartParser, FormParser] to enable parsing of multipart form data
+    """
+    parser_classes = [MultiPartParser, FormParser]
+
+    def get(self, request):
+        data = []
+        """
+            Create a dictionary to store product data
+        """
+        products = Product.objects.all()
+        for product in products:
+            """
+                for email field: Assuming 'bidder' is a ForeignKey to User model and 'email' is a field in the User model
+            """
+            product_data = {
+                'id': product.id,
+                'title': product.title,
+                'min_bid_price': product.min_bid_price,
+                'auction_end_date_time': product.auction_end_date_time.strftime("%d-%m-%y %H:%M:%S"),
+                'photo': product.photo.url if product.photo else None,
+                'email': product.bidder.email,
+            }
+
+            counts = Bid.objects.all().filter(product=product.id).values('product').annotate(total=Count('bidder'))
+            if counts:
+                for count in counts:
+                    product_data['total_bids'] = count['total']
+                highest_bidder = Bid.objects.all().select_related('bidder').filter(product=product.id).first()
+                product_data['highest_bidder'] = highest_bidder.bidder.email
+                product_data['highest_bid'] = highest_bidder.amount
+            else:
+                product_data['total_bids'] = 0
+                product_data['highest_bidder'] = 'None'
+                product_data['highest_bid'] = product.min_bid_price
+
+            data.append(product_data)
+
+        return Response(data)
+
+    def post(self, request):
+        serializer = ProductSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ProductDetailsView(APIView):
+    def get_object(self, id):
+        try:
+            return Product.objects.get(pk=id)
+        except Product.DoesNotExist:
+            raise NotFound(detail="Product not found")
+
+    def get(self, request, id):
+        product = self.get_object(id)
+        serializer = ProductSerializer(product)
+        return Response(serializer.data)
+
+    def delete(self, request, id):
+        product = self.get_object(id)
+        product.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class BidListView(APIView):
+    def get(self, request):
+        bid = Bid.objects.all()
+        serializer = BidSerializer(bid, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        serializer = BidSerializer(data=request.data)
+        data = request.data
+        bid = Bid.objects.filter(user_id=data['bidder'], product_id=data['product'])
+        if bid.exists():
+            return Response("bid exists", status=status.HTTP_302_FOUND)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class BidDetailsView(APIView):
+    def get(self, request, id):
+        try:
+            bid = Bid.objects.get(pk=id)
+        except Bid.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        serializer = BidSerializer(bid)
+        bidder_email = bid.bidder.email
+        data = serializer.data
+        data['email'] = bidder_email
+        return Response(data)
+
+    def delete(self, request, id):
+        try:
+            bid = Bid.objects.get(pk=id)
+        except Bid.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        bid.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+

@@ -1,4 +1,5 @@
 from django.db import models
+
 from authentication.models import CustomUser
 
 
@@ -22,7 +23,7 @@ class Product(models.Model):
 class Bid(models.Model):
     amount = models.IntegerField()
     product = models.ForeignKey(to=Product, on_delete=models.CASCADE)
-    Bidder = models.ForeignKey(to=CustomUser, on_delete=models.CASCADE)
+    bidder = models.ForeignKey(to=CustomUser, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -30,4 +31,4 @@ class Bid(models.Model):
         ordering = ['-created_at']
 
     def __str__(self):
-        return self.id
+        return str(self.amount)
