@@ -37,8 +37,13 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    # 3rd party app
     'rest_framework',
     'corsheaders',
+    'rest_framework_simplejwt',
+
+    # local app
+    'authentication',
 ]
 
 MIDDLEWARE = [
@@ -57,7 +62,6 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     )
 }
-
 
 ROOT_URLCONF = 'auctionbackend.urls'
 
