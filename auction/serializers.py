@@ -25,6 +25,13 @@ class ProductSerializer(serializers.ModelSerializer):
 
 
 class BidSerializer(serializers.ModelSerializer):
+    email = serializers.SerializerMethodField()
+
     class Meta:
         model = Bid
-        fields = ['id', 'amount', 'product', 'bidder']
+        fields = ['id', 'amount', 'product', 'bidder', 'email', 'created_at']
+
+    def get_email(self, obj):
+        bidder_id = obj.bidder_id
+        email = CustomUser.objects.get(id=bidder_id).email
+        return email
