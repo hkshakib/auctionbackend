@@ -6,6 +6,8 @@ from .models import CustomUser
 
 
 class UserSerializer(serializers.ModelSerializer):
+    print("YO")
+
     class Meta:
         model = CustomUser
         fields = ['id', 'email', 'password']
@@ -13,8 +15,8 @@ class UserSerializer(serializers.ModelSerializer):
             'password': {'write_only': True},
         }
 
-        def create(self, validate_data):
-            return CustomUser.objects.create_user(**validate_data)
+    def create(self, validate_data):
+        return CustomUser.objects.create_user(**validate_data)
 
 
 class LoginSerializer(serializers.ModelSerializer):
