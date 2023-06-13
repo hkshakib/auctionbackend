@@ -34,12 +34,12 @@ class UserLoginView(APIView):
         if serializer.is_valid(raise_exception=True):
             email = serializer.data.get('email')
             password = serializer.data.get('password')
+            user = auth.authenticate(email=email, password=password)
 
-        user = auth.authenticate(email=email, password=password)
-
-        if user is not None:
-            token = CustomTokenObtainPairSerializer.get_token(user)
-            return Response(data={'refresh': str(token), 'access': str(token.access_token)}, status=status.HTTP_200_OK)
+            if user is not None:
+                token = CustomTokenObtainPairSerializer.get_token(user)
+                return Response(data={'refresh': str(token), 'access': str(token.access_token)},
+                                status=status.HTTP_200_OK)
 
         return Response({'Message': 'Email or password did not matched!'}, status=status.HTTP_401_UNAUTHORIZED)
 

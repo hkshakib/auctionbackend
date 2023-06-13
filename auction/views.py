@@ -6,8 +6,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
 
-from .models import Bid, Product
 from .serializers import BidSerializer, ProductSerializer
+from .models import Bid, Product
 
 
 class ProductListView(APIView):
@@ -52,7 +52,6 @@ class ProductListView(APIView):
         return Response(data)
 
     def post(self, request):
-        print("request: ", request.data)
         serializer = ProductSerializer(data=request.data)
         print(serializer)
         print(serializer.is_valid())
@@ -75,8 +74,10 @@ class ProductDetailsView(APIView):
         product = self.get_object(id)
         serializer = ProductSerializer(product)
         data = serializer.data
+
         highest_bidder = Bid.objects.filter(product=product).order_by('-amount').first()
         data['highest_bid'] = Bid.objects.filter(product=product).aggregate(Max('amount'))['amount__max']
+
         if highest_bidder:
             highest_bidder_email = highest_bidder.bidder.email
             data['email'] = highest_bidder_email
@@ -86,6 +87,7 @@ class ProductDetailsView(APIView):
     def delete(self, request, id):
         product = self.get_object(id)
         product.delete()
+
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
@@ -99,8 +101,6 @@ class BidListView(APIView):
 
     def post(self, request):
         serializer = BidSerializer(data=request.data)
-        data = request.data
-        print(data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -116,7 +116,7 @@ class BidDetailsView(APIView):
 
         serializer = BidSerializer(bid)
         data = serializer.data
-        print(data)
+
         return Response(data)
 
     def delete(self, request, id):
@@ -136,5 +136,4 @@ class ParticularProductBids(APIView):
         serializer = BidSerializer(bid, many=True)
         data = serializer.data
 
-        print(data)
         return Response(data)
