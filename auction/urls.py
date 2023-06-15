@@ -8,6 +8,5 @@ urlpatterns = [
 
     path('api/bid/', BidListView.as_view(), name='bid'),
     path('api/bid/<int:id>/', ParticularProductBids.as_view(), name='product_bids'),
-    path('api/bid/<id>/', BidDetailsView.as_view(), name='bid_details'),
-
+    # path('api/bid/<id>/', BidDetailsView.as_view(), name='bid_details'),
 ]

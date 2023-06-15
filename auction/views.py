@@ -120,6 +120,7 @@ class BidDetailsView(APIView):
         return Response(data)
 
     def delete(self, request, id):
+        print(id)
         try:
             bid = Bid.objects.get(pk=id)
         except Bid.DoesNotExist:
@@ -137,3 +138,13 @@ class ParticularProductBids(APIView):
         data = serializer.data
 
         return Response(data)
+
+    def delete(self, request, id):
+        print(id)
+        try:
+            bid = Bid.objects.get(pk=id)
+        except Bid.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        bid.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
