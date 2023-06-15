@@ -3,8 +3,20 @@ from django.db import models
 from authentication.models import CustomUser
 
 
+class Category(models.Model):
+    title = models.CharField(max_length=255)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['title']
+
+    def __str__(self):
+        return self.title
+
+
 class Product(models.Model):
     title = models.CharField(max_length=255)
+    category = models.ForeignKey(to=Category, on_delete=models.SET_NULL, null=True)
     description = models.TextField(null=True)
     bidder = models.ForeignKey(to=CustomUser, on_delete=models.CASCADE)
 
