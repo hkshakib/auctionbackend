@@ -80,7 +80,7 @@ class ProductDetailsView(APIView):
 
         if highest_bidder:
             highest_bidder_email = highest_bidder.bidder.email
-            data['email'] = highest_bidder_email
+            data['highest_bidder_email'] = highest_bidder_email
 
         return Response(data)
 
