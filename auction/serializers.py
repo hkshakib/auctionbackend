@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Product, Bid
+from .models import Product, Bid, Category
 
 from authentication.models import CustomUser
 
@@ -10,7 +10,16 @@ class ProductSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Product
-        fields = ['id', 'title', 'description', 'min_bid_price', 'auction_end_date_time', 'photo', 'bidder', 'email']
+        fields = ['id',
+                  'title',
+                  'description',
+                  'min_bid_price',
+                  'auction_end_date_time',
+                  'photo',
+                  'bidder',
+                  'email',
+                  'category'
+                  ]
 
     """
     
@@ -18,6 +27,7 @@ class ProductSerializer(serializers.ModelSerializer):
         get_email method return email using Bidder_id
         
     """
+
     def get_email(self, obj):
         bidder_id = obj.bidder_id
         email = CustomUser.objects.get(id=bidder_id).email
@@ -35,3 +45,10 @@ class BidSerializer(serializers.ModelSerializer):
         bidder_id = obj.bidder_id
         email = CustomUser.objects.get(id=bidder_id).email
         return email
+
+
+class CategorySerializers(serializers.ModelSerializer):
+
+    class Meta:
+        model = Category
+        fields = ['id', 'title']

@@ -6,8 +6,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
 
-from .serializers import BidSerializer, ProductSerializer
-from .models import Bid, Product
+from .serializers import BidSerializer, ProductSerializer, CategorySerializers
+from .models import Bid, Product, Category
 
 
 class ProductListView(APIView):
@@ -29,6 +29,7 @@ class ProductListView(APIView):
             product_data = {
                 'id': product.id,
                 'title': product.title,
+                'category': product.category.title,
                 'min_bid_price': product.min_bid_price,
                 'auction_end_date_time': product.auction_end_date_time.strftime("%d-%m-%y %H:%M:%S"),
                 'photo': product.photo.url if product.photo else None,
@@ -148,3 +149,12 @@ class ParticularProductBids(APIView):
 
         bid.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class CategoryListView(APIView):
+
+    def get(self, request):
+
+        category = Category.objects.all()
+        serializer = CategorySerializers(category, many=True)
+        return Response(serializer.data)
