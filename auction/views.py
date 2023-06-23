@@ -33,6 +33,7 @@ class ProductListView(APIView):
                 'min_bid_price': product.min_bid_price,
                 'auction_end_date_time': product.auction_end_date_time.strftime("%d-%m-%y %H:%M:%S"),
                 'photo': product.photo.url if product.photo else None,
+                'created_date': product.created_at,
                 'email': product.bidder.email,
             }
 

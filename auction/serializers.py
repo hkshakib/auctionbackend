@@ -18,7 +18,8 @@ class ProductSerializer(serializers.ModelSerializer):
                   'photo',
                   'bidder',
                   'email',
-                  'category'
+                  'category',
+                  'created_at',
                   ]
 
     """
