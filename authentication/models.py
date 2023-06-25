@@ -29,6 +29,8 @@ class CustomUserManager(BaseUserManager):
 
 
 class CustomUser(AbstractBaseUser):
+    first_name = models.CharField(max_length=100, null=True)
+    last_name = models.CharField(max_length=100, null=True)
     email = models.EmailField(max_length=100, unique=True)
 
     date_joined = models.DateTimeField(verbose_name='date_joined', auto_now_add=True)

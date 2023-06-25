@@ -90,3 +90,23 @@ class UserProductView(APIView):
             context = {'products': product_serializer.data, 'bids': data}
             return Response(context, status=status.HTTP_200_OK)
         return Response(status=status.HTTP_404_NOT_FOUND)
+
+
+class UsersView(APIView):
+
+    def get(self, request):
+        users = CustomUser.objects.all()
+        serializer = UserSerializer(users, many=True)
+        return Response(serializer.data)
+
+
+class UserDetailsView(APIView):
+
+    def get(self, request, id):
+        try:
+            user = CustomUser.objects.get(pk=id)
+            serializer = UserSerializer(user)
+            return Response(serializer.data)
+        except CustomUser.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
