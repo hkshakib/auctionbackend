@@ -4,13 +4,16 @@ from django.db import models
 
 class CustomUserManager(BaseUserManager):
 
-    def create_user(self, email, password=None):
+    def create_user(self, first_name, last_name, email, password=None):
         if not email:
             raise ValueError("User must have an email.")
 
         user = self.model(
-            email=self.normalize_email(email)
+            first_name=first_name,
+            last_name=last_name,
+            email=self.normalize_email(email),
         )
+
         user.set_password(password)
         user.save(self._db)
         return user
