@@ -33,6 +33,8 @@ class CustomUser(AbstractBaseUser):
     last_name = models.CharField(max_length=100, null=True)
     email = models.EmailField(max_length=100, unique=True)
 
+    photo = models.ImageField(null=True, upload_to='customer_photo')
+
     date_joined = models.DateTimeField(verbose_name='date_joined', auto_now_add=True)
     last_login = models.DateTimeField(verbose_name='last_login', auto_now=True)
     
